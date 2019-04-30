@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use function MongoDB\BSON\toJSON;
 use Illuminate\Support\Facades\Auth;
+use yajra\Datatables\Datatables;
 
 class ProductController extends Controller
 {
@@ -131,30 +132,151 @@ class ProductController extends Controller
 
     public function indexProductType()
     {
-        $productTypes = ProductType::paginate(15);
-        return view('pages.products.types.index')->withProductTypes($productTypes);
+        
+        return view('pages.products.types.index');
     }
 
-    public function storeProductType(Request $request)
+    public function load()
     {
-        $type = new ProductType();
-        $type->name = $request->name;
-        $type->save();
-        return response()->json(['type' => 'success', 'message' => 'Add new product type success !'], 200);
+        
+        $productType = ProductType::all();
+        return Datatables::of($productType)
+        ->editColumn('image',function($productType){
+            return "<img height='70px' src='../assets/upload/product_type/".$productType->image." ' />";
+        })
+        ->addColumn('action', function ($productType) {
+            return '<a href="#" id=" '.$productType->id.' " class="edit btn btn-xs btn-warning"><i class="fa fa-eye"></i>Cập nhật</a> <a href="#" id="'. $productType->id .'" class="delete btn btn-xs btn-danger btn-delete"><i class="fa fa-times"></i> Xóa</a>';
+        })
+        ->rawColumns(['action','image'])
+        ->make(true);
+
     }
 
-    public function updateProductType(Request $request, $id)
-    {
-        $type = ProductType::findOrFail($id);
-        $type->name = $request->name;
-        $type->save();
-        return response()->json(['type' => 'success', 'message' => 'Update protuct type success !'], 200);
+    // public function storeProductType(Request $request)
+    // {
+    //     $type = new ProductType();
+    //     $type->name = $request->name;
+    //     dd($request);
+    //     // --- upload img
+
+    //             if($request->hasFile('image')){
+    //             $img = $request->file('image');
+    //             $img_name = str_random(4)."-".$img->getClientOriginalName();
+    //             // if(file_exists('assets/upload/productType/'.$type->image)){
+    //             // unlink('assets/upload/productType/'.$type->image);
+    //             // }
+    //             $img->move('assets/upload/producttype',$img_name);
+    //             $type->image = $img_name;
+
+    //             }
+                
+    //         // --- 
+    //     $type->save();
+    //     return response()->json(['type' => 'success', 'message' => 'Add new product type success !'], 200);
+    // }
+
+    // public function updateProductType(Request $request, $id)
+    // {
+    //     $type = ProductType::findOrFail($id);
+    //     $type->name = $request->name;
+    //     // --- upload img
+    //             if($request->hasFile('image')){
+    //             $img = $request->file('image');
+    //             $img_name = str_random(4)."-".$img->getClientOriginalName();
+    //             if(file_exists('assets/upload/productType/'.$type->image)){
+    //             unlink('assets/upload/productType/'.$type->image);
+    //             }
+    //             $img->move('assets/upload/productType',$img_name);
+    //             $type->image = $img_name;
+    //             }
+                
+    //         // --- 
+    //     $type->save();
+    //     return response()->json(['type' => 'success', 'message' => 'Update protuct type success !'], 200);
+    // }
+
+    // public function destroyProductType($id)
+    // {
+    //     $type = ProductType::findOrFail($id);
+    //     $type->delete();
+    //     return response()->json(['type' => 'success', 'message' => 'Delete product type success !'], 200);
+    // }
+
+    //productType 
+    public function postdata(Request $request){
+        $validate = Validator::make($request->all(),[
+            'name'=>'required|unique:product_types,name',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+        ]);
+
+        $error_array = array();
+        $success_output = '';
+        if($validate->fails()){
+            foreach ($validate->messages()->getMessages() as $field_name => $messages) {
+                $error_array[] = $messages;
+            }
+        }else{
+            if($request->get('button_action') == "insert"){
+            $ProductType = new ProductType;
+            $ProductType->name = $request->name;
+            $ProductType->slug = str_slug($request->name);
+            // --- upload img
+            if($request->hasFile('image')){
+            $img = $request->file('image');
+            $img_name = str_random(4)."-".$img->getClientOriginalName();
+            // unlink('assets/upload/ProductType/'.$ProductType->image);
+            $img->move('assets/upload/product_type',$img_name);
+            $ProductType->image = $img_name;
+            }
+            // --- 
+            $ProductType->save();
+            $success_output = '<div class="alert alert-success">Thêm thành công</div>';
+            } else
+
+            if($request->get('button_action') == "update"){
+                $ProductType = ProductType::find($request->get('products_types_id'));
+                $ProductType->name = $request->name;
+                $ProductType->slug = str_slug($request->name);
+                // --- upload img
+                if($request->hasFile('image')){
+                $img = $request->file('image');
+                $img_name = str_random(4)."-".$img->getClientOriginalName();
+                if(file_exists('assets/upload/product_type/'.$ProductType->image))
+                unlink('assets/upload/product_type/'.$ProductType->image);
+                $img->move('assets/upload/product_type',$img_name);
+                $ProductType->image = $img_name;
+                }
+                // --- 
+                $ProductType->save();
+                $success_output = '<div class="alert alert-success">Cập nhật thành công</div>';
+            }
+        }
+        $output = array(
+            'error' => $error_array,
+            'success' => $success_output,
+        );
+        echo json_encode($output);
+
     }
 
-    public function destroyProductType($id)
-    {
-        $type = ProductType::findOrFail($id);
-        $type->delete();
-        return response()->json(['type' => 'success', 'message' => 'Delete product type success !'], 200);
+    public function editdata(Request $request){
+        $id = $request->input('id');
+        $ProductType = ProductType::find($id);
+        $output = array(
+            'name' => $ProductType->name,
+            'image' => $ProductType->image,
+            
+        );
+        echo json_encode($output);
+    }
+    //loi delete
+    public function deletedata(Request $request){
+        $ProductType = ProductType::find($request->input('id'));
+        if(file_exists('assets/upload/product_type/'.$ProductType->image)){
+        unlink('assets/upload/product_type/'.$ProductType->image);
+        }
+        $ProductType->delete();
+        return 'Xóa thành công';
+        
     }
 }

@@ -1,145 +1,204 @@
 @extends('layouts.app')
-@section('title','Dashboard')
+@section('title','Loại sản phẩm')
 
 @section('customCSS')
+    <style type="text/css">
+         #top{
+            padding-bottom: 10px;
+            padding-top: 10px;
+        }
+
+    </style>
+<link rel="stylesheet" href="{{ asset('assets/vendor/dropify/dist/css/dropify.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+{{-- <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">     --}}
+<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">    
+
 @endsection
 
 @section('content')
-    <div class="box box-block bg-white">
-        <div class="mb-1">
-            <button type="button" class="btn btn-success btn-rounded" data-href="{{ route('products.types.store') }}" data-type="add" data-toggle="modal" data-target="#create-product-type">Add new product type</button>
-        </div>
-        <table class="table table-striped table-bordered" id="product-types">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Created</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            @forelse($productTypes as $productType)
-                <tr>
-                    <td>{{ $productType->id }}</td>
-                    <td>{{ $productType->name }}</td>
-                    <td>{{ date('d/m/Y H:i', strtotime($productType->created_at)) }}</td>
-                    <td>
-                        <button type="button" class="btn btn-warning btn-sm" data-href="{{ route('products.types.update',$productType->id) }}" data-name="{{ $productType->name }}" data-toggle="modal" data-target="#create-product-type"><i class="ti-pencil"></i> Sửa</button>
-                        <button type="button" class="btn btn-danger btn-sm" data-href="{{ route('products.types.destroy',$productType->id) }}" data-name="{{ $productType->name }}" data-toggle="modal" data-target="#delete"><i class="ti-trash"></i> Xóa</button>
-                    </td>
-                </tr>
-                @empty
-                <tr style="text-align: center;">
-                    <td colspan="4">No data record</td>
-                </tr>
-             @endforelse
-            </tbody>
-        </table>
+    <div class="">
+      <button type="button" name="add" id="add_data" class="btn btn-success btn-sm">Thêm</button><br><br>
     </div>
-    {{-- Model create product type--}}
-    <div class="modal fade" id="create-product-type" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            {{ csrf_field() }}
-                        </div>
-                        <div class="form-group">
-                            <label for="type-name" class="form-control-label">Product type name</label>
-                            <input type="text" class="form-control" name="type-name">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                </div>
+    <table id="datatable" class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>ID </th>
+        <th>Tên</th>
+        <th>Hình ảnh</th>
+        <th>Ngày tạo</th>         
+        <th>Action</th>         
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody> 
+    </table> 
+  {{-- show dialog --}}
+    <div id="productModal" class="modal fade" role="dialog">
+      <div class=" modal-dialog">
+        <div class="modal-content">
+          <form method="post" id="product_form" enctype="multipart/form-data">
+            <div class="modal-header">
+              <button type=" button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Thêm Data</h4>
             </div>
-        </div>
-    </div>
-    {{-- Modal delete menu  --}}
-    <div class="modal fade small-modal" tabindex="-1" role="dialog" id="delete" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <p>Do you want to delete <strong></strong> ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="btnOk" data-token="{{ csrf_token() }}" data-dismiss="modal" class="btn btn-primary btn-rounded">OK</button>
-                    <button type="button" class="btn btn-secondary btn-rounded" data-dismiss="modal">Close</button>
-                </div>
+            <div class="modal-body">
+              {{csrf_field()}}
+              <span id="form_output"></span>
+              <div class="form-group">
+                <label for="">Tên</label>
+                <input id="name" required="" type="text" name="name" class="form-control">
+              </div>
+             <div class="form-group">
+                <label for="">Hình ảnh</label>
+                <input id='file' type="file" name="image" class="dropify" />
+              </div>
+             
+              
+            
             </div>
+
+            <div class="modal-footer">
+              <input type="hidden" name="products_types_id" id="products_types_id" value="">
+              <input type="hidden" name="button_action" id="button_action" value="insert" > 
+              <input type="submit" name="submit" id="action" value="Cập nhật" class="btn btn-info">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </form>
         </div>
-    </div>
+      </div>
+    </div> 
+    {{-- end show dialog  --}}
 @endsection
 
 @section('customJS')
+    <script type="text/javascript" src="{{ asset('assets/customs/products.js') }}"></script>
+    {{-- <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> --}}
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+
+    <script type="text/javascript" src="{{ asset('assets/vendor/dropify/dist/js/dropify.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/vendor/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js') }}"></script>
     <script type="text/javascript">
-        $(document).ready(function(){
-            $('#delete').on('show.bs.modal',function(e){
-                var btn = $(e.relatedTarget);
-                var name = btn.data('name');
-                $(this).find("strong").text(name);
-                var href = btn.data('href');
-                $('#btnOk').click(function () {
-                    var token = $(this).data('token');
-                    $.post(href, {_token: token, _method: 'DELETE'}).done(function(rs){
-                        if(rs.type ==='success'){
-                            toastr.success(rs.message,'Success !!');
-                            $('#delete').modal('hide');
-                            btn.parent().parent().remove();
-                        }
-                    });
-                });
-            });
-            $('#create-product-type').on('show.bs.modal',function(e){
-                var btn = $(e.relatedTarget);
-                var fBtn = $(this).find('.modal-footer');
-                var modal = $(this);
-                var input = modal.find('input[name="type-name"]');
-                if(btn.data('type') === 'add'){
-                    input.val('');
-                    var btnAdd = $('<button>',{class:'btn btn-success btn-rounded',text:'Add',disabled:true});
-                    fBtn.html(btnAdd);
-                    input.keyup(function(){ btnAdd.attr('disabled', $(this).val().length === 0)});
-                    btnAdd.click(function(){
-                        var href = btn.data('href');
-                        var typeName = input.val();
-                        var token = modal.find('input[name="_token"]').val();
-                        $.post(href,{_token:token, name : typeName}).done(function(rs){
-                            if('success' === rs.type){
-                                toastr.success(rs.message,'Success !');
-                                modal.modal('hide');
-                                setTimeout(function(){location.reload()},1000);
-                            }
-                        });
-                    });
-                }else{
-                    var btnUpdate = $('<button>',{class:'btn btn-warning btn-rounded',text:'Update',disabled:true});
-                    fBtn.html(btnUpdate);
-                    input.val(btn.data('name'));
-                    input.keyup(function(){ btnUpdate.attr('disabled', $(this).val().length === 0)});
-                    btnUpdate.click(function () {
-                        var href = btn.data('href');
-                        var typeName = input.val();
-                        var token = modal.find('input[name="_token"]').val();
-                        $.post(href,{_token:token, name : typeName, _method: 'PUT'}).done(function(rs){
-                            if(rs.type === 'success'){
-                                toastr.success(rs.message,'Success !');
-                                modal.modal('hide');
-                                setTimeout(function(){location.reload()},1000);
-                            }
-                        });
-                    });
-
-                }
-            });
-        });
-
+        $('.dropify').dropify();
     </script>
+    <script type="text/javascript">
+$(document).ready(function() {
+    
+    oTableOrder = $('#datatable').DataTable({
+             dom: "lBfrtip",
+             buttons: [
+                 {   
+                     extend: 'csv', 
+                     text: '<i class="glyphicon glyphicon-export"></i> Export',
+                     className: "btn-sm"
+                 }
+             ],  
+             processing: true,
+             serverSide: true,
+         ajax:{ 
+         url:"{{ route('products.types.load') }}",
+         data: function (d) {
+
+              } 
+          },
+         columns: [
+
+                  { data: 'id', name: 'id' },
+                  { data: 'name', name: 'name' },
+                  { data: 'image', name: 'image' },
+                  { data: 'created_at' , name:'created_at'},
+                  { data: 'action' , name:'action' ,orderable: false, searcheble: false}
+
+                 
+          ],        
+       }); 
+    
+    $('#add_data').click(function(){
+      $('#productModal').modal('show');
+      $('#product_form')[0].reset();
+      $('#form_output').html('');
+      $('#button_action').val('insert');
+      $('#action').val('Thêm');
+      $('.modal-title').text('Thêm Data');
+    });
+    //add ajax 
+    $('#product_form').on('submit',function(event){
+      event.preventDefault();
+
+      var form = $('#product_form')[0];
+      var form_data = new FormData(form);
+      // var form_data = $(this).serialize();
+      //form_data.append('image',$('#file').prop('file') );
+      
+      $.ajax({
+        url:"{{route('products.types.postdata')}}",
+        method: "POST",
+        data: form_data,
+        cache:false,
+        contentType: false,
+        processData: false,
+        dataType:"json",
+        success:function(data){
+          if(data.error.length > 0){
+            var error_html ='';
+            for(var count = 0; count < data.error.length;count++){
+              error_html += '<div class="alert alert-danger">'+data.error[count]+'</div>';
+            }
+            $('#form_output').html(error_html);
+          }else{
+            $('#form_output').html(data.success);
+            // $('#product_form')[0].reset();
+            // $('#action').val('Add');
+            // $('.modal-title').text('Add Data');
+            // $('#button_action').val('insert');
+            $('#datatable').DataTable().ajax.reload();
+            // var seccess_html = '<div class="alert alert-success">Data Inserted</div>';
+            // $('#form_output').html(seccess_html);
+          }
+        }
+      })
+    });
+
+    $(document).on('click', '.edit', function(){
+      var id = $(this).attr("id");
+      $('#form_output').html('');
+      $.ajax({
+        url:"{{ route('products.types.editdata') }}",
+        method:'get',
+        data:{id:id},
+        dataType:'json',
+        success:function(data){
+            $('#name').val(data.name);
+            
+            $('#products_types_id').val(id);
+            $('#productModal').modal('show');
+            $('#action').val('Cập nhật');
+            $('.modal-title').text('Cập nhật Data');
+            $('#button_action').val('update');
+        }
+      })
+    });
+
+    $(document).on('click','.delete', function(){
+      var id = $(this).attr('id');
+      if(confirm("Are you sure you want to Delete this data?")){
+        $.ajax({
+          url:"{{ route('products.types.deletedata') }}",
+          method:"get",
+          data:{id:id},
+          success:function(data){
+            alert(data);
+            $('#datatable').DataTable().ajax.reload();
+          }
+        })
+      }
+      else{
+        return false;
+      }
+    });
+    
+}); 
+</script>    
 @endsection

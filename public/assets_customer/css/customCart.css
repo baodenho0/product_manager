@@ -1,0 +1,22 @@
+.cart-widget-side .widget_shopping_cart .remove-cart {
+    top: 13px;
+    right: 10px;
+}
+.widget_shopping_cart .remove-cart{
+	position: absolute;
+    top: 1px;
+    right: 0;
+    padding-right: 0;
+    text-align: center;
+    line-height: 20px;
+    height: 20px;
+    width: 20px;
+    /*font-size: 0;*/
+    margin-bottom: 0;
+    border-radius: 50%;
+    color: rgba(0,0,0,0.8);
+    z-index: 2;
+}
+/*#empty_cart, #isset_cart{
+    display: none;
+}*/

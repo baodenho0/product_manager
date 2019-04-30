@@ -12,30 +12,30 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/dropify/dist/css/dropify.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
 {{-- <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">     --}}
-<link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">    
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">    
 
 @endsection
 
 @section('content')
     <div class="">
-      <button type="button" name="add" id="add_data" class="btn btn-success btn-sm">Add</button><br><br>
+      <button type="button" name="add" id="add_data" class="btn btn-success btn-sm">Thêm</button><br><br>
     </div>
     <table id="datatable" class="table table-striped table-bordered">
     <thead>
       <tr>
         <th>ID </th>
-        <th>Code</th>
-        <th>Name</th>
-        <th>Description</th>        
-        <th>Image</th>        
+        <th>Mã</th>
+        <th>Tên</th>
+        <th>Mô tả</th>        
+        <th>Hình ảnh</th>        
         {{-- <th>Slug</th> --}}
-        <th>Colors</th>        
-        <th>Quantity</th>  
-        <th>Import Price</th>
-        <th>Percent Discount</th>
-        <th>Income</th>
-        <th>Price</th>
-        <th>product_type_id</th>
+        <th>Màu</th>        
+        <th>Số lượng</th>  
+        <th>Giá nhập</th>
+        <th>Chiết khấu %</th>
+        <th>Thu nhập</th>
+        <th>Giá bán</th>
+        <th>Loại hình</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -50,50 +50,50 @@
           <form method="post" id="product_form" enctype="multipart/form-data">
             <div class="modal-header">
               <button type=" button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Add Data</h4>
+              <h4 class="modal-title">Thêm</h4>
             </div>
             <div class="modal-body">
               {{csrf_field()}}
               <span id="form_output"></span>
               <div class="form-group">
-                <label for="">Code</label>
+                <label for="">Mã</label>
                 <input id="code" required="" type="text" name="code" class="form-control">
               </div>
               <div class="form-group">
-                <label for="">Name</label>
+                <label for="">Tên</label>
                 <input id="name" required="" type="text" name="name" class="form-control">
               </div>
                <div class="form-group">
-                <label for="">Description</label>
+                <label for="">Mô tả</label>
                 <input id="description"  type="text" name="description" class="form-control">
               </div>
               <div class="form-group">
-                <label for="">Colors</label>
+                <label for="">Màu</label>
                 <input id="colors" required="" type="text" name="colors" class="form-control">
               </div>
               <div class="form-group">
-                <label for="">Quantity</label>
+                <label for="">Số lượng</label>
                 <input id="quantity" required="" type="text" name="quantity" class="form-control">
               </div>
               <div class="form-group">
-                <label for="">Import Price</label>
+                <label for="">Giá nhập</label>
                 <input id="import_price" required="" type="text" name="import_price" class="form-control">
               </div>
               <div class="form-group">
-                <label for="">Percent Discount</label>
+                <label for="">Chiết khấu %</label>
                 <input id="percent_discount" required="" type="text" name="percent_discount" class="form-control">
               </div>
               <div class="form-group">
-                <label for="">Income</label>
+                <label for="">Thu nhập</label>
                 <input id="income" required="" type="text" name="income" class="form-control">
               </div>
              <div class="form-group">
-                <label for="">Product image</label>
+                <label for="">Hình ảnh</label>
                 <input id='file' type="file" name="image" class="dropify" />
             </div>
 
               <div class="form-group">
-                <label for="">product_type_id</label>
+                <label for="">Loại hình</label>
                 <select class="form-control" name="product_type_id" id="product_type_id">
                   @foreach ($productType as $pt)
                     <option value="{{$pt->id}}">{{$pt->name}}</option>
@@ -106,7 +106,7 @@
             <div class="modal-footer">
               <input type="hidden" name="product_id" id="product_id" value="">
               <input type="hidden" name="button_action" id="button_action" value="insert" > 
-              <input type="submit" name="submit" id="action" value="Add" class="btn btn-info">
+              <input type="submit" name="submit" id="action" value="Thêm" class="btn btn-info">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </form>
@@ -118,6 +118,7 @@
 
 @section('customJS')
     <script type="text/javascript" src="{{ asset('assets/customs/products.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/format_number.js') }}"></script>
     {{-- <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> --}}
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
@@ -172,8 +173,8 @@ $(document).ready(function() {
       $('#product_form')[0].reset();
       $('#form_output').html('');
       $('#button_action').val('insert');
-      $('#action').val('Add');
-      $('.modal-title').text('Add Data');
+      $('#action').val('Thêm');
+      $('.modal-title').text('Thêm');
     });
     //add ajax 
     $('#product_form').on('submit',function(event){
@@ -237,8 +238,8 @@ $(document).ready(function() {
             //--
             $('#product_id').val(id);
             $('#productModal').modal('show');
-            $('#action').val('Edit');
-            $('.modal-title').text('Edit Data');
+            $('#action').val('Cập nhật');
+            $('.modal-title').text('Cập nhật');
             $('#button_action').val('update');
         }
       })
@@ -261,6 +262,8 @@ $(document).ready(function() {
         return false;
       }
     });
+
+
     
 }); 
 </script>    

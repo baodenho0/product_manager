@@ -40,7 +40,7 @@ class ProductManagementController extends Controller
         	return $product->productType->name;
         })
         ->addColumn('action', function ($product) {
-        	return '<a href="#" id=" '.$product->id.' " class="edit btn btn-xs btn-warning"><i class="fa fa-eye"></i>Edit</a> <a href="#" id="'. $product->id .'" class="delete btn btn-xs btn-danger btn-delete"><i class="fa fa-times"></i> Delete</a>';
+        	return '<a href="#" id=" '.$product->id.' " class="edit btn btn-xs btn-warning"><i class="fa fa-eye"></i>Cập nhật</a> <a href="#" id="'. $product->id .'" class="delete btn btn-xs btn-danger btn-delete"><i class="fa fa-times"></i> Xóa</a>';
     	})
     	->rawColumns(['action','image'])
     	->make(true);
@@ -93,7 +93,7 @@ class ProductManagementController extends Controller
 			}
 			// --- 
     		$product->save();
-    		$success_output = '<div class="alert alert-success">Data Inserted</div>';
+    		$success_output = '<div class="alert alert-success">Thêm thành công</div>';
     		} else
 
     		if($request->get('button_action') == "update"){
@@ -121,7 +121,7 @@ class ProductManagementController extends Controller
 				}
 				// --- 
 	    		$product->save();
-	    		$success_output = '<div class="alert alert-success">Data Updated</div>';
+	    		$success_output = '<div class="alert alert-success">Cập nhật thành công</div>';
     		}
     	}
     	$output = array(
@@ -152,9 +152,11 @@ class ProductManagementController extends Controller
 
     public function deletedata(Request $request){
     	$product = Product::find($request->input('id'));
-    	if($product->delete()){
-    		echo 'Data Deleted';
-    	}
+    	if(file_exists('assets/upload/product/'.$product->image)){
+        unlink('assets/upload/product/'.$product->image);
+        }
+        $product->delete();
+        return 'Xóa thành công';
     }
 
     

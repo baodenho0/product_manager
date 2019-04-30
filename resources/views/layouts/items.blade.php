@@ -1,7 +1,7 @@
 @php
     $menu = \App\Menu::where('name','admin')->get()->first();
     if($menu){
-        $items = isset($childs)?$childs:$menu->items()->with('childs')->where('parent_id',0)->orderBy('order','asc')->get();
+        $items = isset($childs) ? $childs : $menu->items()->with('childs')->where('parent_id',0)->orderBy('order','asc')->get();
     }
 @endphp
 @if(isset($items))

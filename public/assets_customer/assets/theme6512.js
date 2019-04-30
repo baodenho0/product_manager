@@ -2084,7 +2084,7 @@ var SW = SW || {};
       SW.collection.categoriesMenu();
       SW.collection.categoriesMenuBtns();
       SW.collection.filtersArea();
-      SW.collection.ajaxFilters();
+      // SW.collection.ajaxFilters();// ajax paginate
       SW.collection.productsLoadMore();
       SW.collection.shopMasonry();
   	  SW.collection.cartPopup();

@@ -55,8 +55,8 @@
   <link href="css/color-config.scss6512.css" rel="stylesheet" type="text/css" media="all" /> 
   <!-- Header hook for plugins ================================================== -->
   <meta id="shopify-digital-wallet" name="shopify-digital-wallet" content="/25763756/digital_wallets/dialog">
-
-
+  <link rel="stylesheet" href="css/customCart.css">
+  @yield('customCSS')
 
  
   <script src="assets/vendor6512.js?11" type="text/javascript"></script>
@@ -204,15 +204,16 @@
     .sale_notification_default .wrapper-noti .bkt--brand {display: none !important;}
     
   </style>  
+
 </head>
 <body id="woodmart-default" class="page-template-default wrapper-full-width   menu-style- woodmart-ajax-shop-on  template-index  woodmart-top-bar-on  menu-style-default offcanvas-sidebar-mobile offcanvas-sidebar-tablet  woodmart-light btns-shop-light btns-accent-hover-light btns-accent-light btns-shop-hover-light btns-accent-3d  btns-shop-3d  enable-sticky-header sticky-header-clone global-search-full-screen woodmart-header-base    "> 
   <!-- begin site-header -->
-    @include('customer.layouts.header')
+    @include('customer.layouts.__header')
     <!-- //site-header -->  
     @yield('content')
     
     <!-- begin site-footer --> 
-    @include('customer.layouts.footer')
+    @include('customer.layouts.__footer')
   <!-- //site-footer --> 
    
 <div style="display: none">
@@ -311,27 +312,27 @@
 
  <script type="text/javascript">
     var woodmart_settings = {};
-    woodmart_settings.enableCurrency = true;
-    woodmart_settings.ajax_cart_enable = true;
-    woodmart_settings.header_banner_version = '1';
-    woodmart_settings.header_banner_close_btn = false;
-    woodmart_settings.header_banner_enabled = false;
-    woodmart_settings.product_media = {};
-    woodmart_settings.cart_data = {};
-    woodmart_settings.cart_data.shoping_cart_action = 'widget';
-    woodmart_settings.product_data = {};
-    woodmart_settings.wishlist_data = {}; 
-    woodmart_settings.compare_data = {};
-    woodmart_settings.search = {};
-    woodmart_settings.search.ajax_search = true;
-    woodmart_settings.search.search_by_collection = true;
-    woodmart_settings.newsletter_enable = '1';
-    woodmart_settings.newsletter_show_after = 'time';
-    woodmart_settings.newsletter_hidden_mobile = true;
-    woodmart_settings.newsletter_time_delay = 5000;
-    woodmart_settings.newsletter_scroll_delay = 700;
-    woodmart_settings.newsletter_on_page = '0';
-    
+    // woodmart_settings.enableCurrency = true;
+    // woodmart_settings.ajax_cart_enable = true;
+    // woodmart_settings.header_banner_version = '1';
+    // woodmart_settings.header_banner_close_btn = false;
+    // woodmart_settings.header_banner_enabled = false;
+    woodmart_settings.product_media = {}; // menu_dropdown
+    // woodmart_settings.cart_data = {};
+    // woodmart_settings.cart_data.shoping_cart_action = 'widget'; //
+    // woodmart_settings.product_data = {};
+    // woodmart_settings.wishlist_data = {}; 
+    // woodmart_settings.compare_data = {};
+    woodmart_settings.search = {}; //*** phan trang ajax, scrollToTop button-show
+    // woodmart_settings.search.ajax_search = true;
+    // woodmart_settings.search.search_by_collection = true;
+    // woodmart_settings.newsletter_enable = '1';
+    // woodmart_settings.newsletter_show_after = 'time';
+    // woodmart_settings.newsletter_hidden_mobile = true;
+    // woodmart_settings.newsletter_time_delay = 5000;
+    // woodmart_settings.newsletter_scroll_delay = 700;
+    // woodmart_settings.newsletter_on_page = '0';
+    // 
     woodmart_settings.product_data.product_swatch_setting = 1;
     if (multi_language && translator.isLang2()) {
       woodmart_settings.product_data.share_fb = window.lang2.products.product.share_fb;
@@ -456,12 +457,13 @@
   <script src="assets/photoswipe.min6512.js" type="text/javascript"></script>
      
   <script src="assets/option_selection6512.js" type="text/javascript"></script>  
-  <script src="assets/theme6512.js" type="text/javascript"></script>
+  <script src="assets/theme6512.js" type="text/javascript"></script>{{-- //*** phan trang ajax, scrollToTop button-show --}}
   <script src="assets/themes_support/api.jquery-e94e010e92e659b566dbc436fdfe5242764380e00398907a14955ba301a4749f.js" type="text/javascript"></script>
   
 
 <script src="javascripts/currencies.js" type="text/javascript"></script>
 <script src="assets/jquery.currencies.min6512.js" type="text/javascript"></script>
+<script src="assets/ajax.shoppingcart.js" type="text/javascript"></script>
 
 @yield('customJS')
 
@@ -506,7 +508,7 @@
     <table class="data-table cart-table"> 
       <tbody>
         <tr class="odd first last wishlist-option-item-0">
-          <td colspan="1" class="product-image shoppingcart-image"><a class="product-image"><img src="#image#"></a></td>
+          <td colspan="1" class="product-image shoppingcart-image"><a class="product-image"><img src="/"></a></td>
           <td colspan="2" class="product-name shoppingcart-name"><h2 class="product-name"><a href="#urlProduct#">#title#</a> <!----></h2></td>
           <td colspan="1" class="a-right product-unittax"> 
             <span class="price">
